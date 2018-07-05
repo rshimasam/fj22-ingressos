@@ -29,24 +29,24 @@ public class SessaoController {
 	@Autowired
 	private FilmeDao filmeDao;
 
-	@GetMapping ("admin/sessao")
+	@GetMapping ("/admin/sessao")
 	public ModelAndView form(@RequestParam("salaId") Integer salaId, SessaoForm form){
 		
 		form.setSalaId(salaId);
 		
 		ModelAndView modelAndView = new ModelAndView("sessao/sessao");
 		modelAndView.addObject("sala", salaDao.findOne(salaId));
-		modelAndView.addObject("filme",filmeDao.findAll());
+		modelAndView.addObject("filmes",filmeDao.findAll());
 		modelAndView.addObject("form", form);
 		return modelAndView;
 	}
 	
-	@PostMapping(value="")
+	@PostMapping(value="/admin/sessao")
 	@Transactional
 	public ModelAndView salva(@Valid SessaoForm form, BindingResult result){
 		if (result.hasErrors()) return form(form.getSalaId(), form);
-		Sessao sessao = form.toSessao(filmeDao, salaDao);
+		Sessao sessao = form.toSessao(salaDao,filmeDao);
 		sessaoDao.save(sessao);
-		return new ModelAndView("redirect:/admin/sala" + form.getSalaId() + "/sessoes");
+		return new ModelAndView("redirect:/admin/sala/" + form.getSalaId() + "/sessoes");
 	}
 }
